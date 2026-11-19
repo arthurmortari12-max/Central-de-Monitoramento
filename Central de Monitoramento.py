@@ -1,17 +1,24 @@
-
-TEMP_MIN = 18.0   
+TEMP_MIN = 18.0  
 TEMP_MAX = 30.0   
+
+
 PM25_MAX = 15.0   
-RUIDO_MAX_DIURNO = 55.0    # das 07h às 22h
-RUIDO_MAX_NOTURNO = 50.0   # das 22h às 07h
+
+
+RUIDO_MAX_DIURNO = 55.0    
+RUIDO_MAX_NOTURNO = 50.0   
+
 LIMITE_PERCENTUAL = 30   
+
 NOME_AMBIENTE = "Parquinho de um prédio residencial"
+
+
 
 
 def calcular_estatisticas(valores):
     """Recebe uma lista de números e devolve (média, maior, menor)."""
     soma = 0
-    maior = valores[0]   # começa pelo primeiro valor (evita erro com negativos)
+    maior = valores[0]   
     menor = valores[0]
 
     for valor in valores:
@@ -33,7 +40,7 @@ def obter_limite_ruido(hora):
         return RUIDO_MAX_NOTURNO
 
 
-# ============================ FUNÇÕES DE ENTRADA ==============================
+
 
 def ler_quantidade():
     """Pede a quantidade de leituras (inteiro maior que zero)."""
@@ -81,7 +88,6 @@ def ler_horario(mensagem):
         print("Horário inválido. Use o formato HH:MM (ex.: 14:30).")
 
 
-# ============================== RELATÓRIO TXT =================================
 
 def salvar_relatorio(nome_arquivo, quantidade, stats_temp, stats_pm25, stats_ruido,
                      ocorrencias, leituras_criticas, percentual, classificacao,
@@ -133,7 +139,7 @@ def salvar_relatorio(nome_arquivo, quantidade, stats_temp, stats_pm25, stats_rui
                       "ambiental nem substituindo avaliação técnica do espaço.\n")
 
 
-# ========================= EXECUÇÃO DE UMA SEQUÊNCIA ==========================
+
 
 def executar_sequencia(numero_sequencia):
     """Executa uma análise completa. Como todas as variáveis nascem aqui dentro,
@@ -147,7 +153,7 @@ def executar_sequencia(numero_sequencia):
 
     print(f"\n===== SEQUÊNCIA {numero_sequencia} - {NOME_AMBIENTE} =====")
 
-    # ---------- 1) ENTRADA E ARMAZENAMENTO ----------
+    
     quantidade = ler_quantidade()
 
     for i in range(1, quantidade + 1):
@@ -158,7 +164,7 @@ def executar_sequencia(numero_sequencia):
         pm25 = ler_numero(f"Leitura {i} - PM2,5 (µg/m³): ")
         ruido = ler_numero(f"Leitura {i} - Ruído (dB): ")
 
-        # Um dicionário por leitura mantém os valores juntos (correspondência)
+       
         leitura = {
             "dia": dia,
             "hora": hora,
@@ -167,20 +173,19 @@ def executar_sequencia(numero_sequencia):
             "pm25": pm25,
             "ruido": ruido,
         }
-        leituras.append(leitura)
+        leituras.append(leitura)   
 
-    # ---------- 2) VERIFICAÇÃO DAS CONDIÇÕES E ALERTAS ----------
+    
     print("\n===== ANÁLISE DAS LEITURAS =====")
 
     for i in range(len(leituras)):
         leitura = leituras[i]
         limite_ruido = obter_limite_ruido(leitura["hora"])
-        leitura_critica = False   # "bandeirinha": conta a leitura uma única vez
+        leitura_critica = False   
 
         print(f"\nLeitura {i + 1} - {leitura['dia']} às "
               f"{leitura['hora']:02d}:{leitura['minuto']:02d}")
 
-        # Três "if" independentes (não "elif"): todos são sempre verificados
         if leitura["temperatura"] < TEMP_MIN or leitura["temperatura"] > TEMP_MAX:
             print("ALERTA: Temperatura fora dos limites estabelecidos")
             registro_alertas.append(
@@ -207,7 +212,7 @@ def executar_sequencia(numero_sequencia):
         else:
             print("Leitura dentro dos limites de referência estabelecidos")
 
-    # ---------- 3) ESTATÍSTICAS ----------
+
     temperaturas = []
     valores_pm25 = []
     ruidos = []
@@ -221,12 +226,10 @@ def executar_sequencia(numero_sequencia):
     media_pm25, maior_pm25, menor_pm25 = calcular_estatisticas(valores_pm25)
     media_ruido, maior_ruido, menor_ruido = calcular_estatisticas(ruidos)
 
-    # Multiplica por 100 antes de dividir para evitar imprecisão decimal
-    # (importante no caso exato de 30%)
+
     percentual = (leituras_criticas * 100) / quantidade
 
-    # ---------- 4) CLASSIFICAÇÃO GERAL ----------
-    # Mais de 30% = atenção; exatamente 30% fica na segunda classificação
+
     if percentual > LIMITE_PERCENTUAL:
         classificacao = ("Estado geral: condições ambientais de atenção, "
                          "com frequência de ocorrências acima do critério estabelecido")
@@ -234,7 +237,7 @@ def executar_sequencia(numero_sequencia):
         classificacao = ("Estado geral: frequência de ocorrências dentro do "
                          "critério estabelecido para a simulação")
 
-    # ---------- 5) EXIBIÇÃO DOS RESULTADOS ----------
+  
     print("\n===== ESTATÍSTICAS =====")
     print(f"Temperatura - média: {media_temp:.2f} °C | maior: {maior_temp} | menor: {menor_temp}")
     print(f"PM2,5 - média: {media_pm25:.2f} µg/m³ | maior: {maior_pm25} | menor: {menor_pm25}")
@@ -250,7 +253,7 @@ def executar_sequencia(numero_sequencia):
 
     print("\n" + classificacao)
 
-    # ---------- 6) RELATÓRIO EM ARQUIVO ----------
+  
     nome_arquivo = f"relatorio_sequencia_{numero_sequencia}.txt"
     salvar_relatorio(nome_arquivo, quantidade,
                      (media_temp, maior_temp, menor_temp),
@@ -261,7 +264,7 @@ def executar_sequencia(numero_sequencia):
     print(f"\nRelatório salvo no arquivo: {nome_arquivo}")
 
 
-# ============================ CONTINUIDADE ====================================
+
 
 def perguntar_nova_sequencia():
     """Pergunta se o usuário quer uma nova sequência; devolve True ou False."""
@@ -274,7 +277,7 @@ def perguntar_nova_sequencia():
         print("Digite S ou N.")
 
 
-# ============================ PROGRAMA PRINCIPAL ==============================
+
 
 numero_sequencia = 1
 continuar = True
